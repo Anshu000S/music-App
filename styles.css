@@ -1,0 +1,28 @@
+.flex-container {
+    display: flex;
+    margin: 20px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  .flexitem{
+    margin: 20px;
+
+  }
+
+#searchDiv{
+  margin-left: 20px;
+}
+
+#trendigOptions{
+  margin-left: 20px;
+}
+
+body{
+  background-color: #ebb0d0 !important;
+  background-image: url('erik-mclean-QzpgqElvSiA-unsplash.JPG');
+}
+
+#text {
+  color: snow;
+}

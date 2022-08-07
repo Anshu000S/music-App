@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <title>Streaming App!</title>
+  </head>
+  <body>
+    <div class="alert alert-primary" role="alert">
+        A Music Streaming App!
+    </div>
+    <div class="row">
+        <div  class="col-8" >
+            <form id = "searchDiv">
+                <div class="form-group row">
+                    <button type="button" class="btn btn-primary" onclick="searchSong()">Search</button>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="searchQuery"> 
+                    </div>
+                </div>
+            </form>
+            <p id = "demo"></p>
+            <div class="flex-container" id = "songlist"></div>
+        </div>
+
+        <div class="col-4">
+            <div id = 'trendigOptions'>
+            <label class="btn-label"><h2 id = "text">Top Charts:</h2></label>
+            <div class="btn-group">
+                
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Trending
+                </button>
+                <div class="dropdown-menu dropdown-menu-right">
+                  <button class="dropdown-item" type="button" onclick="trending('day')">Dailyly</button>
+                  <button class="dropdown-item" type="button" onclick="trending('week')">Weekly</button>
+                  <button class="dropdown-item" type="button" onclick="trending('month')">Monthyly</button>
+                  <button class="dropdown-item" type="button" onclick="trending('year')">Yearly</button>
+                </div>
+              </div>
+              <p id = "trend"></p>
+            </div>
+            
+            <div class="flex-container"  id = "trendingSongs"></div>
+        </div>
+    </div>
+
+
+        
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    
+    <script type="text/javascript">
+        function searchSong(){
+            document.getElementById("songlist").innerHTML = ""; 
+            let searchQuery = document.getElementById('searchQuery').value;
+            document.getElementById("demo").innerHTML = "<h2 id = 'text'>Showing results for: " + searchQuery+"</h2>";
+            let url = `https://api.napster.com/v2.2/search/verbose?query=${searchQuery}&offset=5`
+            fetch(url, {
+                method : 'GET',
+                headers : {
+                    apikey : 'ZTk2YjY4MjMtMDAzYy00MTg4LWE2MjYtZDIzNjJmMmM0YTdm'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                //console.log(data.search.data.tracks[1].albumName);
+                //console.log(data.search.data.tracks[1].previewURL);
+                console.log(data);
+                //  for(var i = 0;i<5;i++){
+                //      document.getElementById("songlist").innerHTML += " The Album Name " + data.search.data.tracks[i].albumName +" and the Artist name "+ data.search.data.tracks[i].artistName +"<br /><br /><br />";
+                //  }
+                for(var i = 0;i<5;i++){
+                    let album = data.search.data.tracks[i].albumName;
+                    let artist = data.search.data.tracks[i].artistName;
+                    let url = data.search.data.tracks[i].previewURL  
+                    //let image = data.search.data.playlists[i].images[0].url;
+                    document.getElementById("songlist").innerHTML += 
+                    "<div class = 'flexitem'>"+
+                   "<div class='card' style='width: 20rem;>"+
+                        "<img class='card-img-top' src='' alt='Card image cap'>"+
+                        "<div class='card-body'>"+
+                        "<h5 class='card-title'>"+album+"</h5>"+
+                        "<p class='card-text'>"+data.search.data.tracks[i].artistName+"</p>"+
+                        "</div>"+
+                        "<audio controls preload='auto'><source src="+ url +" type='audio/mp3'></audio>"+
+                    "</div><br>"+
+                    "</div>"
+                }
+            });
+        }
+
+        window.onload = function(){
+            trending();
+        }
+
+        function trending(timeFrame = 'week'){
+                //alert('hey');
+                document.getElementById("trend").innerHTML = "<h2 id = 'text'>"+ timeFrame+"ly trending </h2>";
+                document.getElementById("trendingSongs").innerHTML = '';
+                let url = `https://api.napster.com/v2.2/tracks/top?range=${timeFrame}&limit=5`;
+                fetch(url, {
+                    method : 'GET',
+                    headers : {
+                        apikey : 'ZTk2YjY4MjMtMDAzYy00MTg4LWE2MjYtZDIzNjJmMmM0YTdm'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    for(let i=0;i<5;i++){
+                        let album = data.tracks[i].albumName;
+                        let artist = data.tracks[i].artistName;
+                        let song = data.tracks[i].name;
+                        let url = data.tracks[i].previewURL;
+                        document.getElementById("trendingSongs").innerHTML += 
+                        "<div class = 'flexitem'>"+
+                        "<div class='card' style='width: 20rem;>"+
+                            "<img class='card-img-top' src='' alt='Card image cap'>"+
+                            "<div class='card-body'>"+
+                            "<h5 class='card-title'>"+album+"</h5>"+
+                            "<p class='card-text'>"+song+" by "+artist+"</p>"+
+                            "</div>"+
+                            "<audio controls preload='auto'><source src="+ url +" type='audio/mp3'></audio>"+
+                        "</div><br>"+
+                        "</div>"
+                    }
+                })
+            }
+    </script>
+
+</body>
+  
+</html>
